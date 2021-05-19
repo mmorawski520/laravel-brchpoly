@@ -40,6 +40,19 @@
      @endforeach
     </select>
   </div>
+   <div class="form-group">
+    <label for="playerSelect">{{__('Select player')}}</label>
+    <select class="form-control" name="playerSelect" id="playerSelect">
+       <option></option>
+     @foreach($players_in_board as $player)
+
+     @if($player->id!=$action->player_id)
+      
+      <option value="{{$player->nickname}}">{{$player->nickname}}</option>
+     @endif
+     @endforeach
+    </select>
+  </div>
   <div class="form-group">
     <label for="ReceiveValue">{{__("Amount")}}</label>
     <input type="number" class="form-control" name="ReceiveValue"id="ReceiveValue" >
