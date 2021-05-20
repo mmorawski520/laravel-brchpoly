@@ -10,6 +10,7 @@ use App\Http\Requests\PlayersStoreRequest;
 use Illuminate\Http\Request;
 use App\Models\Player;
 use App\Models\Board;
+use App\Models\PlayerActions;
 use App\Models\User;
 
 class Board extends Model
@@ -56,8 +57,31 @@ class Board extends Model
            
         }
     }
+    public function updateBoard(request $request){
+        if($request->boardName){
+            Board::where("id","=",$request->id)->update(["board_name"=>$request->boardName]);
+        }
+        if($request->salary){
+            Board::where("id","=",$request->id)->update(["salary"=>$request->salary]);
+        }
+        if($request->StartingBalance){
+            Board::where("id","=",$request->id)->update(["starting_balance"=>$request->StartingBalance]);
+        }
+        
+        return redirect("/boards");
+
+    }
+    public function reset($id){
+        $BoardAmount=Board::select("starting_balance")->where("boards.id","=",$id)->first();
+        PlayerActions::join("players","player_actions.player_id","=","players.id")
+        ->where("board_id","=",$id)
+        ->delete();
+        Player::
+         where("board_id","=",$id)->update(["players_balance"=>$BoardAmount->starting_balance]);
+        return redirect()->back();
+    }
     public function storeBoard(request $request){
-    	  $AmountOfPlayers = $request->input("AmountOfPlayers");
+    	$AmountOfPlayers = $request->input("AmountOfPlayers");
         $StartingBalance = $request->input("StartingBalance");
         $userId = auth()->user()->id;
         $validate = $request->validated();

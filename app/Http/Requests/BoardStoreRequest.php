@@ -24,7 +24,7 @@ class BoardStoreRequest extends FormRequest
     public function rules()
     {
         return [
-          "BoardName" => "required",
+          "BoardName" => "required|min:3|max:32",
           "StartingBalance" => "required|integer|min:2|max:4294967295|gt:0",
           "salary" => "required|integer|min:1|max:4294967295|gt:0", 
           "AmountOfPlayers" => "required|integer|min:2|max:4|gt:0"

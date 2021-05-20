@@ -25,6 +25,13 @@
               {{__('PLAY')}}
             </button>
           </form>
+          <form class="float-left" action="{{route("edit",["id"=>$board->id])}}"method="GET">
+            @csrf
+            @method('get')
+            <button type="submit"  class="mr-3 btn btn-info">
+              {{__('EDIT')}} 
+            </button>
+          </form>
           <form class="float-left" action="/boards/{{$board->id}} "method="POST">
             @csrf
             @method('delete')

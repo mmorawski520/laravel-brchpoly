@@ -52,10 +52,12 @@ Route::get('/boards/players_actions/edit/{id}',[App\Http\Controllers\PlayersActi
 Route::get('/boards/players_actions/updateAction/{id}',[App\Http\Controllers\PlayersActionsController::class,'updateAction'])->name("updateAction")->middleware("auth");
 
 Route::get('/boards/currentBoard/{id}',[App\Http\Controllers\BoardsController::class, 'currentBoard'])->name('currentBoard')->middleware("auth");
+Route::get('/boards/currentBoard/reset/{id}',[App\Http\Controllers\BoardsController::class, 'reset'])->name('resetBoard')->middleware("auth");
 Route::get('/boards/currentBoard/receive/{id}',[App\Http\Controllers\PlayersController::class, 'receive'])->name('receive')->middleware("auth");
 Route::get('boards/currentBoard/receivePanel/{id}',[App\Http\Controllers\PlayersController::class,'receivePanel'])->name('receivePanel')->middleware("auth");
 Route::get('/boards/currentBoard/receiveFromAll/{id}',[App\Http\Controllers\PlayersController::class, 'receiveFromAll'])->name('receiveFromAll')->middleware("auth");
 Route::get('/boards/currentBoard/receiveFromAllStore/{id}',[App\Http\Controllers\PlayersController::class, 'receiveFromAllStore'])->name('receiveFromAllStore')->middleware("auth");
+Route::get('/boards/edit/{id}',[App\Http\Controllers\BoardsController::class,"edit"])->name("edit")->middleware("auth");
 
 Route::get('/boards/currentBoard/receiveStore/{id}',[App\Http\Controllers\PlayersController::class, 'receiveStore'])->name('receiveStore')->middleware("auth");
 Route::get('/boards/currentBoard/send/{id}',[App\Http\Controllers\PlayersController::class, 'send'])->name('send')->middleware("auth");
@@ -69,7 +71,9 @@ Route::get('/boards/currentBoard/sendToAnotherPlayerStore/{id}',[App\Http\Contro
 Route::get('/boards/currentBoard/salary/{id}',[App\Http\Controllers\PlayersController::class, 'salary'])->name('salary')->middleware("auth");
 Route::post('/players/create/', [App\Http\Controllers\PlayersController::class, 'store'])->name('store')->middleware("auth");
 Route::post('/players',[App\Http\Controllers\PlayersController::class,'store'])->middleware("auth");
+Route::post('/boards/update',[App\Http\Controllers\BoardsController::class,"update"])->name("update")->middleware("auth");
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware("auth");
+
 
 Route::post('settings/settingsStore',[App\Http\Controllers\SettingsController::class,'store'])->name('settingsStore')->middleware("auth");
 Route::post("settings",[App\Http\Controllers\SettingsController::class,'deleteAccountStore'])->name('deleteAccountStore');
