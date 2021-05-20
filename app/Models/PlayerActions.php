@@ -9,7 +9,7 @@ use App\Models\PlayerActions;
 use App\Models\Pages;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Http\Requests\EditActionRequest;
+use App\Http\Requests\EditActionValidation;
 class PlayerActions extends Model {
     use HasFactory;
     protected $table = "player_actions";
@@ -107,9 +107,9 @@ class PlayerActions extends Model {
         } elseif ($action->action_type == "send_to_another_player") {
                $this->sendAnotherPlayerUndo($amount, $action->player_id, $action->enemy_id);
         } elseif ($action->action_type == "send_to_everyone") {
-           $this->sendToEveryoneUndo($amount, $action->player_id,$player->board_id);
+           $this->sendToEveryoneUndo($action->amount, $action->player_id,$player->board_id);
         } elseif ($action->action_type == "receive_from_everyone") {
-              $this->receiveFromEveryoneUndo($amount, $action->player_id,$player->board_id);
+              $this->receiveFromEveryoneUndo($action->amount, $action->player_id,$player->board_id);
         }
         }
     
@@ -123,7 +123,7 @@ class PlayerActions extends Model {
             return $this->sendToBankUpdate($action, $amount, $id);       
         }
         if ($change == "send_to_everyone") {
-            return $this->sendToEveryoneUpdate($action, $amount, $id, $player);
+           return $this->sendToEveryoneUpdate($action, $amount, $id, $player);
         }
         if ($change == "receive_from_everyone") {        
             return $this->receiveFromEveryoneUpdate($action, $amount, $id, $player);
@@ -169,25 +169,26 @@ class PlayerActions extends Model {
         PlayerActions::where("id", '=', $id)->update(['amount' => $newAmount,"action_type"=>"receive_from_everyone"]);
     }
     //Main Updating function
-    public function updateAction($id, request $request) {
+    public function updateAction($id, request $request ) {
 
         $action = PlayerActions::where("id", "=", $id)->first();
         $enemyNickname=$request->input("playerSelect");
-         $player = Player::where("id", "=", $action->player_id)->first();
-          $boardId = $player->board_id;
+        $player = Player::where("id", "=", $action->player_id)->first();
+        $boardId = $player->board_id;
         $enemy=Player::where("nickname","=",$enemyNickname)->where("board_id","=",$boardId)->first();
         $amount = $request->input("ReceiveValue");
         $change = $request->input("actionSelect");
+        
         if(!is_numeric($amount)){
-            $change=$action->amount;
+            $amount=$action->amount;
         } 
               
-      
+     // return $id;
             
             $this->correctUndo($action,$amount,$id,$player);
             $this->correctUpdate($action, $amount, $id, $player,$change,$enemy);
         
-        // return $action->action_type;
-        return redirect()->route("currentBoard", ["id" => $boardId]);
+        //return $action->action_type;
+       return redirect()->route("currentBoard", ["id" => $boardId]);
     }
 }

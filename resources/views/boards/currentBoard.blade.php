@@ -6,10 +6,15 @@
    <h1 class="d-flex  mx-auto text-center">{{__('This is Board')}} {{$board->board_name}}</h1>
 </div>
 <div class="container px-auto">
-   <div class="mt-5">
-       <form class="" action="{{route('action',['id'=>0,'board_id'=>$board->id,'task'=>'every'])}}" method="GET">
+   <div class="mt-5 m-auto d-flex">
+       <form class="mx-auto" action="{{route('action',['id'=>0,'board_id'=>$board->id,'task'=>'every'])}}" method="GET">
             @csrf
-            <button class="d-flex mx-auto text-center btn btn-warning mr-3 mb-5">{{__('Whole history')}}
+            <button class=" mx-auto text-center btn btn-warning mr-3 mr-m5b-5">{{__('Whole history')}}
+            </button>
+         </form>
+          <form class="mx-auto"   method="GET">
+            @csrf
+            <button class=" mx-auto text-center btn btn-info mr-3 ml-5 mb-5">{{__('reset')}}
             </button>
          </form>
       </div>

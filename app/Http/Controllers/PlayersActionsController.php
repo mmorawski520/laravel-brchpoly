@@ -7,7 +7,7 @@ use App\Models\PlayerActions;
 use App\Models\Pages;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Http\Requests\EditActionRequest;
+use App\Http\Requests\EditActionValidation;
 class PlayersActionsController extends Controller
 {
     public function index($id, $board_id,$task)
@@ -32,12 +32,12 @@ class PlayersActionsController extends Controller
         $board=Player::where("id","=",$action->player_id)->first();
         $players_in_board = Player::where("players.board_id", "=",$board->board_id)->get();
         return view('players_actions.edit',["action"=>$action,"players_in_board"=>$players_in_board,"actionTypes"=>$actionTypes,"id"=>$id]);    }
-    public function updateAction(request $request)
+    public function updateAction(EditActionValidation $EditActionValidation)
     {
-        $id=$request->id;
-         $amount=$request->input("ReceiveValue");
-        $change=$request->input("actionSelect");
-        return PlayerActions::first()->updateAction($id,$request);
+        $id=$EditActionValidation->id;
+         $amount=$EditActionValidation->input("ReceiveValue");
+        $change=$EditActionValidation->input("actionSelect");
+        return PlayerActions::first()->updateAction($id,$EditActionValidation);
     }
     public function destroy($id)
     {
