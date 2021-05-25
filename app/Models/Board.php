@@ -64,8 +64,8 @@ class Board extends Model
         if($request->salary){
             Board::where("id","=",$request->id)->update(["salary"=>$request->salary]);
         }
-        if($request->StartingBalance){
-            Board::where("id","=",$request->id)->update(["starting_balance"=>$request->StartingBalance]);
+        if($request->startingBalance){
+            Board::where("id","=",$request->id)->update(["starting_balance"=>$request->startingBalance]);
         }
         
         return redirect("/boards");

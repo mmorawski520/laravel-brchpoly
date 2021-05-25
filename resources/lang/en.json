@@ -8,5 +8,6 @@
 	"whereMoney":"Where are you going to send your money?",
 	"noBoards":"There aren't any boards",
 	"playersActions":"There aren't any actions",
-	"settingsH1":"Just a panel with settings"
+	"settingsH1":"Just a panel with settings",
+	"notEnoughMessage":"You aren't rich enough :/ your balance="
 }

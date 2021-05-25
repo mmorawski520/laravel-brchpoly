@@ -147,7 +147,18 @@ return [
             "nPassword.min"=>"Powtórzone hasło musi składać się z conajmniej 8 znaków",
             "nPasswordr.min"=> "Powtórzone nowe hasło musi składać się z conajmniej 8 znaków",
             "nPasswordr.same"=>"Nowe hasła nie są takie same",
-            "nPassword.ChangingPassword"=>"Stare hasło jest nie poprawne"
+            "nPassword.ChangingPassword"=>"Stare hasło jest nie poprawne",
+            'playerSelect.required' => 'This cannot be blank',
+            'playerSelect.IfHaveEnough'=>"Jesteś zbyt biedny",
+            "boardName.max"=>"nazwa jest zbyt długa",
+            "boardName.min:2"=>"nazwa jest zbyt krótka",
+            "salary.gt"=>"kwota nie może być ujemna :/",
+            "startingBalance.gt"=>"kwota nie może być ujemna :/",
+            "salary.min"=>"kwota jest zbyt mała",
+            "startingBalance.min"=>"kwota jest zbyt mała",
+            "salary.max"=>"kwota jest zbyt duża",
+            "startingBalance.max"=>"kwota jest zbyt duża",
+            
 ],
 
 ];

@@ -30,26 +30,26 @@
     <h3>{{__("You cant edit this action")}}</h3>
 @else
 <div class="float-right">
-            <form class="float-left" action="{{route('updateAction',['id'=>$action->id])}}"method="GET">
+            <form class="float-left" action="{{route('updateAction',['id'=>implode(",",["id"=>$action->id,"id_p"=>$action->player_id,"actionType"=>$action->action_type]),'action'=>$action])}}"method="GET">
             	
             	@csrf
             	@method('GET')
    <div class="form-group">
-    <label for="actionSelect">{{__('Change action')}}</label>
+    <label for="actionSelect">{{__('Change action if u want')}}</label>
     <select class="form-control" name="actionSelect" id="actionSelect">
     	 <option></option>
      @foreach($actionTypes as $actionType)
 
      @if($actionType!=$action->action_type && $actionType!="salary")
      	
-     	<option value="{{$actionType}}">{{$actionType}}</option>
+     	<option value="{{$actionType}}">{{__($actionType)}}</option>
      @endif
      @endforeach
     </select>
   </div>
    <div class="form-group">
-    <label for="playerSelect">{{__('Select player')}}</label>
-    <select class="form-control" name="playerSelect" id="playerSelect">
+    <label class="playerSelect"for="playerSelect">{{__('Select player if u need')}}</label>
+    <select class="form-control playerSelect" name="playerSelect" id="playerSelect">
        <option></option>
      @foreach($players_in_board as $player)
 
@@ -104,6 +104,15 @@
  
 
 </div>
-
+<script>
+  $(".playerSelect").hide()
+  $( "#actionSelect" ).click(function() {
+  
+    $(".playerSelect").hide()
+   if($("#actionSelect").val()=="send_to_another_player"){
+    $(".playerSelect").show()
+   }
+});
+</script>
 @endif
 @endsection

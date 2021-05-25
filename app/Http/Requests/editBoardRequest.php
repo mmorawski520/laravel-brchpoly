@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use App\Models\Board;
 class editBoardRequest extends FormRequest
 {
     /**
@@ -24,8 +24,8 @@ class editBoardRequest extends FormRequest
     public function rules()
     {
         return [
-            "BoardName" => "min:2|max:32|nullable",
-          "StartingBalance" => "integer|min:2|max:4294967295|gt:0|nullable",
+            "boardName" => "min:2|max:32|nullable",
+          "startingBalance" => "integer|min:1|max:4294967295|gt:0|nullable",
           "salary" => "integer|min:1|max:4294967295|gt:0|nullable", 
            
         ];

@@ -16,11 +16,17 @@ class ifHaveEnough implements Rule
     protected $id;
     protected $action;
     protected $value;
-    public function __construct($id,$action,$value)
+    protected $balance;
+    protected $brch;
+    protected $actionType;
+    public function __construct($id,$action,$value,$oldActionType)
     {
         $this->id=$id;
         $this->action=$action;
         $this->value=$value;
+        $this->brch=explode(",",$id);
+        $this->oldActionType=$oldActionType;
+        $this->balance=Player::select("players_balance")->where("id","=",$this->brch)->first();
     }
 
     /**
@@ -31,15 +37,19 @@ class ifHaveEnough implements Rule
      * @return bool
      */
     public function passes($attribute, $value)
-    {
-
-        if($this->action=="send_to_bank" || $this->action=="send_to_another_player"|| $this->action=="send_to_everyone"){
-        $balance=Player::select("players_balance")->where("id","=",$this->id);
-        if($balance>$this->value){
+    {      
+        if($this->action!="receive" && $this->action!="receive_from_everyone" && $this->action!="receive" && $this->action!="receive_from_everyone"){
+               if(($this->action=="send_to_bank" || $this->action=="send_to_another_player")||($this->oldActionType=="send_to_bank" || $this->oldActionType=="send_to_another_player") ){
+        
+        if($this->balance->players_balance<$this->value){
             return false;
         }
 
     }
+    if(($this->action=="send_to_everyone" && $this->balance->players_balance<$this->value*3)||($this->oldActionType=="send_to_everyone" && $this->balance->players_balance<$this->value*3)){
+            return false;
+        }}
+
      return true;
     }
 
@@ -50,6 +60,6 @@ class ifHaveEnough implements Rule
      */
     public function message()
     {
-        return _("You aren't rich enough :/");
+        return __("notEnoughMessage").$this->balance->players_balance;
     }
 }

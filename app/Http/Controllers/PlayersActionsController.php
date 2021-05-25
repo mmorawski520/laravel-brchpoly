@@ -32,12 +32,13 @@ class PlayersActionsController extends Controller
         $board=Player::where("id","=",$action->player_id)->first();
         $players_in_board = Player::where("players.board_id", "=",$board->board_id)->get();
         return view('players_actions.edit',["action"=>$action,"players_in_board"=>$players_in_board,"actionTypes"=>$actionTypes,"id"=>$id]);    }
-    public function updateAction(EditActionValidation $EditActionValidation)
+    public function updateAction(EditActionValidation $EditActionValidation,$id)
     {
-        $id=$EditActionValidation->id;
+        //$id=$EditActionValidation->id;
          $amount=$EditActionValidation->input("ReceiveValue");
         $change=$EditActionValidation->input("actionSelect");
-        return PlayerActions::first()->updateAction($id,$EditActionValidation);
+     // return $id;
+        return PlayerActions::first()->updateAction($EditActionValidation->id,$EditActionValidation);
     }
     public function destroy($id)
     {

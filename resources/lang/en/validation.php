@@ -159,8 +159,16 @@ return [
             "nPassword.min"=>"The new password must be at least 8 characters",
             "nPasswordr.min"=> "The new password repeat must be at least 8 characters",
             "nPasswordr.same"=>"New passwords aren't the same",
-            
-            'ReceiveValue'=>' '
+            'playerSelect.required'=> 'The :atfdsatribute field is required when :other is :value.',
+            'ReceiveValue'=>' ',
+             "boardName.max"=>"name is too long",
+            "boardName.min"=>"name is too short",
+            "salary.gt"=>"amount can't be lower than 0:/",
+            "startingBalance.gt"=>"amount can't be lower than 0 :/",
+            "salary.min"=>"amount is too small",
+            "startingBalance.min"=>"amount is too small",
+            "salary.max"=>"amount is too big",
+            "startingBalance.max"=>"amount is too big"
     ],
 
 ];

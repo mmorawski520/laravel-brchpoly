@@ -11,20 +11,20 @@
 </div>
  
 <div class="container mx-auto  mt-4 mb-4">
-  <h1>Change what you want</h1>
+  <h1>{{__("Change what you want")}}</h1>
   <form action="{{route("update",["id"=>$board->id])}}"method="POST">
     @csrf
     @method("POST")
    <div class="form-group">
-    <label for="boardName">current board name <strong>{{$board->board_name}}</strong></label>
+    <label for="boardName">{{__("current board name")}} <strong>{{$board->board_name}}</strong></label>
     <input type="text" class="form-control" name="boardName" id="boardName">
     </div>
     <div class="form-group">
-    <label for="salary">current salary <strong>{{$board->salary}}</strong></label>
+    <label for="salary">{{__("current salary")}} <strong>{{$board->salary}}</strong></label>
      <input type="text" class="form-control" name="salary" id="salary">
   </div>
   <div class="form-group">
-    <label for="startingBalance">current starting balance <strong>{{$board->starting_balance}}</strong></label>
+    <label for="startingBalance">{{__("current starting balance")}} <strong>{{$board->starting_balance}}</strong></label>
 
      <input type="text" class="form-control" name="startingBalance" id="startingBalance">
   </div>

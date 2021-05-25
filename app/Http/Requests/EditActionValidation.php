@@ -25,10 +25,11 @@ class EditActionValidation extends FormRequest
      */
     public function rules()
     {
+        
         return [
             
             "ReceiveValue"=>"Required|Integer|min:1|max:4294967295|gt:0",
-            "playerSelect"=>["Required_if:actionSelect,send_to_another_player",new IfHaveEnough($this->id,$this->input("actionSelect"),$this->input("ReceiveValue"))],
+            "playerSelect"=>["Required_if:actionSelect,send_to_another_player",new IfHaveEnough(explode(",",$this->id)[1],$this->input("actionSelect"),$this->input("ReceiveValue"),explode(",",$this->id)[2])],
             
         ];
     }

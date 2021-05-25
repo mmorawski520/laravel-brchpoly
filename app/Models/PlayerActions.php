@@ -19,15 +19,7 @@ class PlayerActions extends Model {
         return $this->belongsTo(Player::class);
     }
     public function tasks($id, $board_id, $task) {
-     /*   if ($task == "current") {
-            $boards = DB::select('select * from boards where user_id = ?', [$id, ]);
-            $actions = Player::join("player_actions", "players.id", "=", "player_actions.player_id")->where("players.board_id", "=", $board_id)->where("player_actions.player_id", "=", $id)->orderBy("player_actions.created_at", "DESC")->paginate(5);
-        }
-        if ($task == "every") {
-            $boards = DB::select('select * from boards where user_id = ?', [$id, ]);
-            $actions = Player::join("player_actions", "players.id", "=", "player_actions.player_id")->where("players.board_id", "=", $board_id)->orderBy("player_actions.created_at", "DESC")->paginate(5);
-        }*
-        return $actions;*/}
+     }
     //Undo functions ******************************************************************
     public function receiveOrSalaryUndo($amount, $playersId) {
         Player::where('id', '=', $playersId)->decrement('players_balance', $amount);
@@ -170,25 +162,28 @@ class PlayerActions extends Model {
     }
     //Main Updating function
     public function updateAction($id, request $request ) {
-
-        $action = PlayerActions::where("id", "=", $id)->first();
+        $id=explode(",",$id);
+        $action = PlayerActions::where("id", "=", $id[0])->first();
         $enemyNickname=$request->input("playerSelect");
-        $player = Player::where("id", "=", $action->player_id)->first();
+        $player = Player::where("id", "=",$id[1])->first();
         $boardId = $player->board_id;
         $enemy=Player::where("nickname","=",$enemyNickname)->where("board_id","=",$boardId)->first();
         $amount = $request->input("ReceiveValue");
         $change = $request->input("actionSelect");
-        
+       
         if(!is_numeric($amount)){
             $amount=$action->amount;
         } 
               
+        if(!$change || $change==""){
+            $change=$action->action_type;
+        }
      // return $id;
-            
-            $this->correctUndo($action,$amount,$id,$player);
-            $this->correctUpdate($action, $amount, $id, $player,$change,$enemy);
+         
+            $this->correctUndo($action,$amount,$id[0],$player);
+            $this->correctUpdate($action, $amount, $id[0], $player,$change,$enemy);
         
-        //return $action->action_type;
+       //return $action->action_type;
        return redirect()->route("currentBoard", ["id" => $boardId]);
     }
 }
