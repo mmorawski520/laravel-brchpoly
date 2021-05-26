@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Http\Requests\PlayersStoreRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
- 
 use App\Models\Board;
 use App\Models\User;
 use App\Models\Player;
@@ -16,20 +15,18 @@ use App\Models\PlayerActions;
 class Player extends Model
 {
     use HasFactory;
-     protected $table="players";
+    protected $table="players";
     protected $primaryKey="id";
-     protected $fillable=['board_id','nickname','players_balance','bankrupt'];
+    protected $fillable=['board_id','nickname','players_balance','bankrupt'];
     public function Players(){
         return $this->belongsTo(Boards::class);
     }
     public function getData(request $request,$id){
-      
-
         return array("playerId"=>$playerId,"playerName"=>$playerName,"board"=>$board,"boardId"=>$boardId,"currentPlayer"=>$currentPlayer,"betterPlayer"=>$betterPlayer,"betterPlayerId"=>$betterPlayerId,"receivedValue"=>$receivedValue,"decreasedBalance"=>$decreasedBalance,"increasedBalance"=>$increasedBalance,"players"=>$players);
     }
     public function sendToAnotherPlayerStore(request $request, $id){
          
-           $playerId = $id;
+        $playerId = $id;
         $playerName = $request->input("toPlayer");
         $board = DB::table('players')->where('id', '=', $playerId)->first();
         $boardId = $board->board_id;
@@ -49,7 +46,6 @@ class Player extends Model
                 Player::where('id', '=', $playerId)->update(['players_balance' => $decreasedBalance]);
                 Player::where('id', '=', $betterPlayerId)->update(['players_balance' => $increasedBalance]);
                 return redirect()->route('currentBoard', ['id' => $boardId]);
-
             }
             else
             {
@@ -63,13 +59,15 @@ class Player extends Model
     }
     public function salary(request $request){
         $playerId = $request->id;
-        $board = DB::table('players')->join('boards', 'players.board_id', '=', 'boards.id')
-            ->where('players.id', '=', $playerId)->first();
+        $board = DB::table('players')
+            ->join('boards', 'players.board_id', '=', 'boards.id')
+            ->where('players.id', '=', $playerId)
+            ->first();
         $salary = $board->salary;
         $currentPlayer = Player::where('id', '=', $playerId)->first();
         $currentBalance = $currentPlayer->players_balance;
         $newBalance = $currentBalance + $salary;
-
+        
         Player::where('id', '=', $playerId)->update(['players_balance' => $newBalance]);
         PlayerActions::create(["player_id" => $playerId, 'action_type' => 'salary', 'enemy_id' => 0, 'amount' => $salary]);
 
@@ -156,12 +154,12 @@ class Player extends Model
         }
     }
     public function receiveFromAllStore(request $request){
+        
         $receivedValue = $request->input('ReceiveValue');
         $playerId = $request->id;
         $board = DB::table('players')->where('id', '=', $playerId)->first();
         $currentPlayer = Player::where('id', '=', $playerId)->first();
         $currentBalance = $currentPlayer->players_balance;
-
         $validate = $request->validate(["ReceiveValue" => "required|min:1|gt:0|max:$currentBalance",
 
         ]);
@@ -177,7 +175,8 @@ class Player extends Model
                 ->count();
 
             Player::where('id', '=', $playerId)->update(['players_balance' => $newBalance]);
-            Player::where('id', '!=', $playerId)->where('board_id', '=', $board->board_id)
+            Player::where('id', '!=', $playerId)
+                ->where('board_id', '=', $board->board_id)
                 ->decrement('players_balance', $receivedValue);
             PlayerActions::create(["player_id" => $playerId, 'action_type' => 'receive_from_everyone', 'enemy_id' => 0, 'amount' => $receivedValue]);
             return redirect()->route('currentBoard', ['id' => $board->board_id]);
@@ -213,7 +212,6 @@ class Player extends Model
                 $player->save();
                 unset($player);
             }
-            // return view('boards.currentBoard',['BoardId'=>$BoardId]);
             return redirect()->route('currentBoard', ['id' => $BoardId]);
         }
     }
