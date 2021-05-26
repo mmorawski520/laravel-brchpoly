@@ -12,7 +12,7 @@ class PlayersActionsController extends Controller
 {
     public function index($id, $board_id,$task)
     {
-         $players_in_board = Player::where("players.board_id", "=", $board_id)->get();
+        $players_in_board = Player::where("players.board_id", "=", $board_id)->get();
      
         if($task == "current") {
             $boards = DB::select('select * from boards where user_id = ?', [$id, ]);
