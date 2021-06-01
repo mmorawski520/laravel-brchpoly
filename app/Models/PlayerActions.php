@@ -76,7 +76,7 @@ class PlayerActions extends Model {
         $boardId = $playerIdCurrent->board_id;
         $playerIdCurrentBalance = $playerIdCurrent->players_balance;
         
-          $this->correctUndo($action[0],$amount,$id,$playerIdCurrent);
+        $this->correctUndo($action[0],$amount,$id,$playerIdCurrent);
         if ($action_type == "receive" || $action_type == "salary") {
             $this->deleteReceiveOrSalary($id);
         } elseif ($action_type == "send_to_bank") {
@@ -92,7 +92,7 @@ class PlayerActions extends Model {
     }
     //choose correct undo action
         public function correctUndo($action,$amount,$id,$player){
-            if ($action->action_type == "receive" || $action->action_type == "salary") {
+        if ($action->action_type == "receive" || $action->action_type == "salary") {
              $this->receiveOrSalaryUndo($action->amount, $action->player_id);
         } elseif ($action->action_type == "send_to_bank") {
              $this->sendToBankUndo($action->amount, $action->player_id);
@@ -104,7 +104,6 @@ class PlayerActions extends Model {
               $this->receiveFromEveryoneUndo($action->amount, $action->player_id,$player->board_id);
         }
         }
-    
 
     //Choose correct updating function
     public function correctUpdate($action, $amount, $id, $player,$change,$enemy) {
@@ -127,27 +126,22 @@ class PlayerActions extends Model {
     }
     //updating functions
     public function receiveUpdate($action, $newAmount, $id) {
-       // $action = PlayerActions::where("id", "=", $id)->first();
-         
         $player = Player::where("id", "=", $action->player_id)->increment("players_balance", $newAmount);
         PlayerActions::where("id", "=", $id)->update(["amount" => abs($newAmount),"action_type"=>"receive"]);
         return;
     }
-    public function sendToBankUpdate($action, $newAmount, $id) {
-        //$action = PlayerActions::where("id", "=", $id)->first();
-         
+    public function sendToBankUpdate($action, $newAmount, $id) {   
         $player = Player::where("id", "=", $action->player_id)->decrement("players_balance", $newAmount);
         PlayerActions::where("id", "=", $id)->update(["amount" => abs($newAmount),"action_type"=>"send_to_bank" ]);
         return;
     }
     public function sendToEveryoneUpdate($action, $newAmount, $id, $player) {
-         $amountOfPlayers = Player::where("board_id", "=", $player->board_id)->count() - 1;
+        $amountOfPlayers = Player::where("board_id", "=", $player->board_id)->count() - 1;
         Player::where("id", '=', $action->player_id)->where('board_id', '=', $player->board_id)->decrement('players_balance', $newAmount * $amountOfPlayers);
         Player::where("id", '!=', $action->player_id)->where('board_id', '=', $player->board_id)->increment('players_balance', $newAmount);
         PlayerActions::where("id", '=', $id)->update(['amount' => $newAmount,"action_type"=>"send_to_everyone"]);
     }
     public function sendToAnotherPlayerUpdate($action, $newAmount, $id, $player,$enemy) {
-        
          
         Player::where('id', '=', $action->player_id)->decrement('players_balance', $newAmount);
         Player::where('id', '=', $enemy->id)->increment('players_balance', $newAmount);
@@ -155,7 +149,7 @@ class PlayerActions extends Model {
         PlayerActions::where("id", '=', $id)->update(['amount' => $newAmount,"action_type"=>"send_to_another_player","enemy_id"=>$enemy->id]);
     }
     public function receiveFromEveryoneUpdate($action, $newAmount, $id, $player) {
-         $amountOfPlayers = Player::where("board_id", "=", $player->board_id)->count() - 1;
+        $amountOfPlayers = Player::where("board_id", "=", $player->board_id)->count() - 1;
         Player::where("id", '=', $action->player_id)->where('board_id', '=', $player->board_id)->increment('players_balance', $newAmount * $amountOfPlayers);
         Player::where("id", '!=', $action->player_id)->where('board_id', '=', $player->board_id)->decrement('players_balance', $newAmount);
         PlayerActions::where("id", '=', $id)->update(['amount' => $newAmount,"action_type"=>"receive_from_everyone"]);
@@ -178,12 +172,9 @@ class PlayerActions extends Model {
         if(!$change || $change==""){
             $change=$action->action_type;
         }
-     // return $id;
          
-            $this->correctUndo($action,$amount,$id[0],$player);
-            $this->correctUpdate($action, $amount, $id[0], $player,$change,$enemy);
-        
-       //return $action->action_type;
-       return redirect()->route("currentBoard", ["id" => $boardId]);
+        $this->correctUndo($action,$amount,$id[0],$player);
+        $this->correctUpdate($action, $amount, $id[0], $player,$change,$enemy);
+        return redirect()->route("currentBoard", ["id" => $boardId]);
     }
 }
