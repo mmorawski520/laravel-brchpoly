@@ -5,7 +5,7 @@
 
 <h2>There is a very simple creator</h2>
 <img src="ssc2.png">
-<h4>So it's a main panel where you can reset, make any action or open whole history or even history of choosen player</h4>
+<h4>So it's a main panel where you can make a reset, make any action or open whole history or even history of choosen player</h4>
 <img src="ssc3.png">
 <h4>Screenshot of the history panel</h4>
 <img src="ssc4.png">
