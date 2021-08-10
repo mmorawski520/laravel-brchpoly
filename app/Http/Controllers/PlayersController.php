@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -46,6 +47,7 @@ class PlayersController extends Controller
             "id" => $request->id,
         ]);
     }
+
     public function sendBank(Request $request)
     {
         return view('boards.sendBank', [
@@ -53,6 +55,7 @@ class PlayersController extends Controller
             "id" => $request->id,
         ]);
     }
+
     public function sendToEveryone(Request $request)
     {
         return view('boards.sendToEveryone', [
@@ -60,6 +63,7 @@ class PlayersController extends Controller
             "id" => $request->id,
         ]);
     }
+
     public function receiveFromAll(Request $request)
     {
         return view('boards.receiveFromAll', [
@@ -67,6 +71,7 @@ class PlayersController extends Controller
             "id" => $request->id,
         ]);
     }
+
     public function create(Request $request)
     {
         $IfBoardHasPlayers = DB::table('players')
@@ -82,21 +87,24 @@ class PlayersController extends Controller
             return redirect('/home');
         }
     }
+
     public function receivePanel(Request $request)
     {
         return view('boards.receivePanel', ['id' => $request->id]);
     }
+
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
 
     public function receiveStore(Request $request)
     {
-        return Player::first()->receiveStore($request);
+        return Player::receiveStore($request);
     }
+
     public function sendToAnotherPlayer(request $request)
     {
         $playerId = $request->id;
@@ -117,26 +125,29 @@ class PlayersController extends Controller
 
     public function sendToAnotherPlayerStore(request $request, $id)
     {
-        return Player::first()->sendToAnotherPlayerStore($request, $id);
+        return Player::sendToAnotherPlayerStore($request, $id);
     }
 
     public function sendBankStore(request $request)
     {
-        return Player::first()->sendBankStore($request);
+        return Player::sendBankStore($request);
     }
+
     public function sendToEveryoneStore(request $request)
     {
-        return Player::first()->sendToEveryoneStore($request);
+        return Player::sendToEveryoneStore($request);
     }
+
     public function receiveFromAllStore(request $request)
     {
-        return Player::first()->receiveFromAllStore($request);
+        return Player::receiveFromAllStore($request);
     }
 
     public function store(PlayersStoreRequest $request)
     {
-        return Player::first()->store($request);
+        return Player::store($request);
     }
+
     public function destroy($id)
     {
         //

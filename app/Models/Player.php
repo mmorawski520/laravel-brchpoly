@@ -15,49 +15,65 @@ use App\Models\PlayerActions;
 class Player extends Model
 {
     use HasFactory;
-    protected $table="players";
-    protected $primaryKey="id";
-    protected $fillable=['board_id','nickname','players_balance','bankrupt'];
-    public function Players(){
+
+    protected $table = "players";
+    protected $primaryKey = "id";
+    protected $fillable = ['board_id', 'nickname', 'players_balance', 'bankrupt'];
+
+    public function Players()
+    {
         return $this->belongsTo(Boards::class);
     }
-    public function getData(request $request,$id){
-        return array("playerId"=>$playerId,"playerName"=>$playerName,"board"=>$board,"boardId"=>$boardId,"currentPlayer"=>$currentPlayer,"betterPlayer"=>$betterPlayer,"betterPlayerId"=>$betterPlayerId,"receivedValue"=>$receivedValue,"decreasedBalance"=>$decreasedBalance,"increasedBalance"=>$increasedBalance,"players"=>$players);
+
+    public function getData(request $request, $id)
+    {
+        return array("playerId" => $playerId, "playerName" => $playerName, "board" => $board, "boardId" => $boardId, "currentPlayer" => $currentPlayer, "betterPlayer" => $betterPlayer, "betterPlayerId" => $betterPlayerId, "receivedValue" => $receivedValue, "decreasedBalance" => $decreasedBalance, "increasedBalance" => $increasedBalance, "players" => $players);
     }
-    public function sendToAnotherPlayerStore(request $request, $id){
-         
+    public static function getBoard($playerId){
+        return DB::table('players')->where('id', '=', $playerId)->first();
+    }
+    public static function getCurrentPlayer($boardId,$playerId){
+        return DB::table('players')->where('board_id', '=', $boardId)->where('id', '=', $playerId)->first();
+    }
+
+    public static function getBetterPlayer($boardId,$playerName){
+        return DB::table('players')->where('board_id', '=', $boardId)->where('nickname', '=', $playerName)->first();
+    }
+    public static function getPlayers($boardId,$playerId){
+        return DB::table('players')->where('id', '!=', $playerId)->where('board_id', '=', $boardId)->get();
+    }
+    public static function sendToAnotherPlayerStore(request $request, $id)
+    {
+
         $playerId = $id;
         $playerName = $request->input("toPlayer");
-        $board = DB::table('players')->where('id', '=', $playerId)->first();
+        $board = self::getBoard($playerId);
         $boardId = $board->board_id;
-        $currentPlayer = DB::table('players')->where('board_id', '=', $boardId)->where('id', '=', $playerId)->first();
-        $betterPlayer = DB::table('players')->where('board_id', '=', $boardId)->where('nickname', '=', $playerName)->first();
+        $currentPlayer = self::getCurrentPlayer($boardId,$playerId);
+        $betterPlayer = self::getBetterPlayer($boardId,$playerName);
         $betterPlayerId = $betterPlayer->id;
         $receivedValue = $request->input('ReceiveValue');
         $decreasedBalance = $currentPlayer->players_balance - $receivedValue;
         $increasedBalance = $betterPlayer->players_balance + $receivedValue;
-        $players = DB::table('players')->where('id', '!=', $playerId)->where('board_id', '=', $boardId)->get();
-        if ($players->contains('nickname', $playerName))
-        {
-            $validate = $request->validate(["ReceiveValue" => "required|min:1|gt:0|max:$currentPlayer->players_balance", ]);
-            if ($validate)
-            {
+        $players = self::getPlayers($boardId,$playerId);
+
+        if ($players->contains('nickname', $playerName)) {
+            $validate = $request->validate(["ReceiveValue" => "required|min:1|gt:0|max:$currentPlayer->players_balance",]);
+            if ($validate) {
                 PlayerActions::create(["player_id" => $playerId, 'action_type' => 'send_to_another_player', 'enemy_id' => $betterPlayerId, 'amount' => $receivedValue]);
                 Player::where('id', '=', $playerId)->update(['players_balance' => $decreasedBalance]);
                 Player::where('id', '=', $betterPlayerId)->update(['players_balance' => $increasedBalance]);
                 return redirect()->route('currentBoard', ['id' => $boardId]);
-            }
-            else
-            {
+            } else {
                 return route('sendToAnotherPlayer', ['id' => $playerId, 'board_id' => $boardId]);
             }
-        }
-        else
-        {
+        } else {
             return redirect("/home");
         }
     }
-    public function salary(request $request){
+
+    public function salary(request $request)
+    {
         $playerId = $request->id;
         $board = DB::table('players')
             ->join('boards', 'players.board_id', '=', 'boards.id')
@@ -67,13 +83,15 @@ class Player extends Model
         $currentPlayer = Player::where('id', '=', $playerId)->first();
         $currentBalance = $currentPlayer->players_balance;
         $newBalance = $currentBalance + $salary;
-        
+
         Player::where('id', '=', $playerId)->update(['players_balance' => $newBalance]);
         PlayerActions::create(["player_id" => $playerId, 'action_type' => 'salary', 'enemy_id' => 0, 'amount' => $salary]);
 
         return redirect()->route('currentBoard', ['id' => $board->board_id]);
     }
-    public function receiveStore(request $request){
+
+    public static function receiveStore(request $request)
+    {
 
         $receivedValue = $request->input('ReceiveValue');
         $playerId = $request->id;
@@ -81,13 +99,10 @@ class Player extends Model
         $validate = $request->validate(["ReceiveValue" => "required|min:1|gt:0",
 
         ]);
-        if (!$validate)
-        {
+        if (!$validate) {
             return route('receive', ['id' => $playerId, 'board_id' => $boardId]);
-        }
-        else
-        {
-             
+        } else {
+
             $currentPlayer = Player::where('id', '=', $playerId)->first();
             $currentBalance = $currentPlayer->players_balance;
             $newBalance = $currentBalance + $receivedValue;
@@ -98,7 +113,8 @@ class Player extends Model
             return redirect()->route('currentBoard', ['id' => $board->board_id]);
         }
     }
-    public function sendBankStore(request $request)
+
+    public static function sendBankStore(request $request)
     {
         $receivedValue = $request->input('ReceiveValue');
         $playerId = $request->id;
@@ -108,12 +124,9 @@ class Player extends Model
         $validate = $request->validate(["ReceiveValue" => "required|min:1|gt:0|max:$currentBalance",
 
         ]);
-        if (!$validate)
-        {
+        if (!$validate) {
             return route('sendBank', ['id' => $playerId, 'board_id' => $boardId]);
-        }
-        else
-        {
+        } else {
             // return route('currentBoard',['id'=>$boardId]);
             //return $boardId->board_id;
             $newBalance = $currentBalance - $receivedValue;
@@ -123,7 +136,8 @@ class Player extends Model
 
         }
     }
-    public function sendToEveryoneStore(request $request)
+
+    public static function sendToEveryoneStore(request $request)
     {
         $receivedValue = $request->input('ReceiveValue');
         $playerId = $request->id;
@@ -134,16 +148,13 @@ class Player extends Model
         $validate = $request->validate(["ReceiveValue" => "required|min:1|gt:0|max:$currentBalance",
 
         ]);
-        if (!$validate)
-        {
+        if (!$validate) {
             return route('sendToEveryone', ['id' => $playerId, 'board_id' => $boardId]);
-        }
-        else
-        {
+        } else {
             // return route('currentBoard',['id'=>$boardId]);
             //return $boardId->board_id;
             $newBalance = $currentBalance - $receivedValue * Player::where('id', '!=', $playerId)->where('board_id', '=', $board->board_id)
-                ->count();
+                    ->count();
 
             Player::where('id', '=', $playerId)->update(['players_balance' => $newBalance]);
             Player::where('id', '!=', $playerId)->where('board_id', '=', $board->board_id)
@@ -153,8 +164,10 @@ class Player extends Model
 
         }
     }
-    public function receiveFromAllStore(request $request){
-        
+
+    public static function receiveFromAllStore(request $request)
+    {
+
         $receivedValue = $request->input('ReceiveValue');
         $playerId = $request->id;
         $board = DB::table('players')->where('id', '=', $playerId)->first();
@@ -163,17 +176,11 @@ class Player extends Model
         $validate = $request->validate(["ReceiveValue" => "required|min:1|gt:0|max:$currentBalance",
 
         ]);
-        if (!$validate)
-        {
+        if (!$validate) {
             return route('receiveFromAll', ['id' => $playerId, 'board_id' => $boardId]);
-        }
-        else
-        {
-            // return route('currentBoard',['id'=>$boardId]);
-            //return $boardId->board_id;
+        } else {
             $newBalance = $currentBalance + $receivedValue * Player::where('id', '!=', $playerId)->where('board_id', '=', $board->board_id)
-                ->count();
-
+                    ->count();
             Player::where('id', '=', $playerId)->update(['players_balance' => $newBalance]);
             Player::where('id', '!=', $playerId)
                 ->where('board_id', '=', $board->board_id)
@@ -183,32 +190,26 @@ class Player extends Model
 
         }
     }
-    public function store(PlayersStoreRequest $request)
+
+    public static function store(PlayersStoreRequest $request)
     {
         $AmountOfPlayers = $request->input('AmountOfPlayers');
         $BoardId = $request->input('BoardId');
         $StartingBalance = $request->input('StartingBalance');
         $IfBoardHasPlayers = DB::table('players')->where('board_id', $BoardId)->count();
 
-        if ($IfBoardHasPlayers == 0)
-        {
+        if ($IfBoardHasPlayers == 0) {
             $validate = $request->validated();
-        }
-        else
-        {
+        } else {
             return redirect('/home');
         }
-        if (!$validate)
-        {
+        if (!$validate) {
             return redirect('boards/createPlayers', ['AmountOfPlayers' => $AmountOfPlayers]);
-        }
-        else
-        {
-            for ($i = 0;$i < $AmountOfPlayers;$i++)
-            {
+        } else {
+            for ($i = 0; $i < $AmountOfPlayers; $i++) {
                 $j = $i;
                 $j++;
-                $player = Player::create(["nickname" => $request->input("PlayerName" . $j) , "board_id" => $BoardId, "players_balance" => $StartingBalance]);
+                $player = Player::create(["nickname" => $request->input("PlayerName" . $j), "board_id" => $BoardId, "players_balance" => $StartingBalance]);
                 $player->save();
                 unset($player);
             }
